@@ -4,6 +4,7 @@ const SCRIPT = {
   prompt2: `That sounds fun!\n\nDo you have a gender preference?`,
   prompt3: `What kind of look are you going for?`,
   prompt4: `Let’s give it a personal touch. Which of these items can you see yourself wearing?`,
+  fallback: `I am going to an underwater beach + Non-binary + Something that screams fairy`,
 };
 
 export default SCRIPT;

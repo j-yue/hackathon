@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import { MessageInput } from "@chatscope/chat-ui-kit-react";
 
 import Layout from "./components/Layout";
@@ -10,10 +11,23 @@ import InputButtonGroup from "./components/InputButtonGroup";
 
 import SCRIPT from "./script";
 import earrings from "./assets/earrings.jpeg";
+import dress from "./assets/dress.jpeg";
+import jacket from "./assets/jacket.jpeg";
+import scarf from "./assets/scarf.jpeg";
+import skirt from "./assets/skirt.jpeg";
+import gen from "./assets/gen.png";
 
 import { createMessageObj } from "./helpers";
+import Typing from "./components/Typing";
+
+import ENDPOINTS from "./endpoints";
+
+const { recommendation, generative } = ENDPOINTS;
 
 const App = () => {
+  // used to keep track of step in user flow
+  const [step, setStep] = useState(1);
+
   // used to display chat history
   const [messageList, setMessageList] = useState([]);
   const [occasion, setOccasion] = useState(null);
@@ -21,9 +35,47 @@ const App = () => {
   const [style, setStyle] = useState(null);
   const [showInput, setShowInput] = useState(true);
   const [showLoading, setShowLoading] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [imageList, setImageList] = useState({});
 
-  // used to keep track of step in user flow
-  const [step, setStep] = useState(1);
+  //ref for scrolling
+  const chatRef = useRef(null);
+
+  // helper function for updating imageList
+  const updateImageList = (isSelected, index, metadata) => {
+    const updatedList = Object.assign(imageList);
+    // add to list
+    if (isSelected) {
+      updatedList[index] = metadata;
+    }
+    // delete
+    if (!isSelected) {
+      delete updatedList[index];
+    }
+
+    setImageList(() => updatedList);
+  };
+
+  useEffect(() => {
+    chatRef.current.scrollIntoView(true);
+  }, [messageList]);
+
+  // useEffect(() => {
+  // }, [imageList]);
+
+  // do this if error with api
+  const apiFallback = () => {
+    setMessageList(() => {
+      return [
+        ...messageList,
+        createMessageObj("", "outgoing", true, ImageSlider, {
+          srcList: [dress, earrings, jacket, scarf, skirt],
+          updateImageList,
+        }),
+      ];
+    });
+  };
 
   // initialize the messageList with introduction
 
@@ -36,15 +88,50 @@ const App = () => {
     });
   }, []);
 
+  // make request to recommendation api
   useEffect(() => {
+    console.log(step);
     if (step === 2 || step === 4) setShowInput(() => false);
 
-    // ready to get styles from api
+    // ready to get styles from api and update UI
     if (step === 4) {
-      console.log(
-        `occasion is ${occasion}\ngender is ${gender}\nstyle is ${style}`
-      );
       setShowLoading(() => true);
+
+      setTimeout(() => {
+        setShowLoading(() => false);
+        setShowOptions(() => true);
+
+        // api call to recommendation api
+        const prompt = [occasion, gender, style].join(" + ");
+
+        // then update messagelist with the response
+        setMessageList(() => {
+          return [
+            ...messageList,
+            createMessageObj("", "outgoing", true, ImageSlider, {
+              srcList: [earrings, jacket, dress, scarf, skirt],
+              updateImageList,
+            }),
+          ];
+        });
+      }, 500);
+      clearTimeout();
+    }
+
+    if (step === 5) {
+      setMessageList(() => {
+        setShowFeedback(() => true);
+        setShowLoading(() => false);
+
+        return [
+          ...messageList,
+          createMessageObj("", "outgoing", true, ImageSlider, {
+            srcList: [gen],
+            size: "md",
+            updateImageList,
+          }),
+        ];
+      });
     }
   }, [step]);
 
@@ -83,14 +170,54 @@ const App = () => {
     ]);
   };
 
+  const handleStyleSelect = () => {
+    const notEmptyList = Object.keys(imageList).length > 0;
+
+    if (notEmptyList) {
+      // update step
+      setStep(() => step + 1);
+      //update chat history
+      setMessageList(() => {
+        return [...messageList, createMessageObj("Style", "outgoing")];
+      });
+
+      // show loading while waaiting for api response
+      setShowLoading(() => true);
+
+      // format prompt and call api
+
+      let prompt = imageList.map((img) => img.description);
+      prompt = prompt.join(" + ");
+      // api response received
+      setTimeout(() => {
+        // add image to chat history
+        setShowLoading(false);
+        // show feedback
+        // setShowFeedback(() => true);
+      }, 1000);
+      setMessageList(() => {
+        return [
+          ...messageList,
+          createMessageObj("", "outgoing", true, ImageSlider, {
+            srcList: [gen],
+            size: "md",
+            updateImageList,
+          }),
+        ];
+      });
+      setStep(() => step + 1);
+    }
+  };
+
   return (
     <Layout>
       <Header />
       <ChatHistory
+        chatRef={chatRef}
         messageList={messageList}
         className="layout-body"
-        showLoading={showLoading}
       />
+      {/* visible when entering occasion or style text input */}
       {showInput && (
         <MessageInput
           className="layout-footer"
@@ -99,6 +226,7 @@ const App = () => {
           onSend={(e) => handleSend(e)}
         />
       )}
+      {/* visible for gender */}
       {!showInput && step === 2 && (
         <InputButtonGroup
           className="layout-footer"
@@ -106,18 +234,24 @@ const App = () => {
           handleClick={handleGenderSelect}
         />
       )}
-      {/* <ImageSlider
-        srcList={[
-          earrings,
-          earrings,
-          earrings,
-          earrings,
-          earrings,
-          earrings,
-          earrings,
-          earrings,
-        ]}
-      /> */}
+
+      {/* visible for styling */}
+      {step === 4 && showOptions && (
+        <InputButtonGroup
+          className="layout-footer"
+          options={["Style", "More", "Refine"]}
+          handleClick={handleStyleSelect}
+        />
+      )}
+
+      {/* last step */}
+      {showFeedback && (
+        <InputButtonGroup
+          className="layout-footer"
+          options={["Bad results", "Refine"]}
+        />
+      )}
+      {showLoading && <Typing />}
     </Layout>
   );
 };

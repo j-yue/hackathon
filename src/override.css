@@ -6,12 +6,14 @@
   --white: #ffffff;
   --border: 1px solid hsla(0, 0%, 17%, 1);
   --padding-sm: 0.25em;
-  --padding-md: 0.3em;
-  --padding-lg: 0.5em;
+  --padding-md: 0.5em;
+  --padding-lg: 1rem;
   --font: "Roboto", sans-serif;
   --font-color: #403e39;
   --image-sm: 10ch;
   --image-md: 20ch;
+  --border-radius: 1ch;
+  --color-blue: hsla(216, 100%, 88%, 1);
 }
 
 * {
@@ -54,10 +56,26 @@
   background-color: white;
   flex-grow: 0.05;
   padding-bottom: var(--padding-lg);
+  min-height: 100px;
 }
 
 .layout-body {
   flex-grow: 1;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-bottom: var(--border);
+}
+
+/* override messageinput */
+.cs-message-input__content-editor,
+.cs-message-input__content-editor-container,
+.cs-message-input__content-editor-wrapper {
+  background-color: #fff;
+}
+
+.cs-message-input__content-editor-wrapper {
+  border: var(--border);
+  border-radius: var(--border-radius);
 }
 
 .image {
@@ -65,7 +83,7 @@
   /* height: var(--image-sm);
   width: auto; */
   object-fit: cover;
-  border-radius: 1.5rem;
+  border-radius: var(--border-radius);
 }
 
 .image--sm {
@@ -80,17 +98,64 @@
   border: 8px solid hsla(216, 100%, 88%, 1);
 }
 
+.image:hover {
+  cursor: pointer;
+}
+
 .imageSlider {
   border: hsla(0, 0%, 17%, 1);
   overflow: hidden;
-  /* display: flex; */
-  /* flex-flow: row nowrap; */
 }
 
 .imageSlider-scroll {
   display: flex;
   flex-flow: row nowrap;
   overflow-x: scroll;
+}
+
+.imageSlider-scroll > * {
+  margin: var(--padding-sm);
+}
+
+.cs-message.cs-message--outgoing:has(.imageSlider)
+  .cs-message__content-wrapper {
+  overflow: scroll;
+}
+
+.cs-message.cs-message--outgoing:has(.imageSlider) .cs-message__content {
+  border: none;
+  padding: 0;
+}
+
+.cs-message {
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.inputButton {
+  border-radius: var(--border-radius);
+  background-color: #fff;
+  padding: var(--padding-md);
+  border: var(--border);
+  margin: var(--padding-sm);
+}
+
+.inputButton:hover {
+  cursor: pointer;
+}
+.inputButton:active {
+  background-color: var(--color-blue);
+}
+
+.inputButtonGroup {
+  text-align: end;
+}
+
+.inputButtonGroup-scroll {
+  overflow-y: scroll;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
 }
 
 .cs-message--incoming .cs-message__content {
@@ -119,13 +184,51 @@
   border-radius: 2ch;
 }
 
+/* typing component */
+.typing {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  padding-left: 1rem;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.typing-animation {
+  display: flex;
+  flex-flow: row nowrap;
+  animation: blink 2s linear infinite;
+  align-items: center;
+}
+
+.typing-dots {
+  width: 1ch;
+  height: 1ch;
+  border-radius: 0.5ch;
+  margin: 0.1ch;
+  background-color: gray;
+}
+
+.typing-label {
+  padding-left: 1ch;
+  color: gray;
+}
 /* border */
 /* .cs-message .cs-message__content-wrapper .cs-message__content {
   border: var(--border) !important;
 }
  */
 
-.stacked {
+/* .stacked {
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
@@ -135,4 +238,4 @@
 .stacked p {
   margin: 0;
   line-height: 1.5;
-}
+} */

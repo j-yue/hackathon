@@ -1,14 +1,15 @@
-import {
-  MessageList,
-  Message,
-  TypingIndicator,
-} from "@chatscope/chat-ui-kit-react";
+import { MessageList, Message } from "@chatscope/chat-ui-kit-react";
 
 // messageList is array of objects with structure:
 // { message, direction, isCustom, Component, props }
-const ChatHistory = ({ messageList, showLoading, ...props }) => {
+const ChatHistory = ({ messageList, chatRef, ...props }) => {
   return (
-    <MessageList {...props}>
+    <MessageList
+      // scrollBehavior="auto"
+      // autoScrollToBottom={true}
+      // disableOnYReachWhenNoScroll={true}
+      {...props}
+    >
       {messageList.map(
         ({ message, direction, isCustom, Component, props }, index) =>
           !isCustom ? (
@@ -21,7 +22,9 @@ const ChatHistory = ({ messageList, showLoading, ...props }) => {
             </Message>
           )
       )}
-      {showLoading && <TypingIndicator />}
+
+      {/* last element, used for scrolling */}
+      <div className="chat-last" ref={chatRef}></div>
     </MessageList>
   );
 };
