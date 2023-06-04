@@ -1,0 +1,138 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
+:root {
+  --gradient: linear-gradient(260.74deg, #d9e4f5 9.15%, #f5e3e6 94.37%),
+    linear-gradient(0deg, #2b2b2b, #2b2b2b);
+  --white: #ffffff;
+  --border: 1px solid hsla(0, 0%, 17%, 1);
+  --padding-sm: 0.25em;
+  --padding-md: 0.3em;
+  --padding-lg: 0.5em;
+  --font: "Roboto", sans-serif;
+  --font-color: #403e39;
+  --image-sm: 10ch;
+  --image-md: 20ch;
+}
+
+* {
+  font-family: var(--font);
+  color: var(--font-color);
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+.layout {
+  background-color: #fff;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.layout-header,
+.layout-footer,
+.layout-body {
+  padding: var(--padding-md);
+}
+
+.layout-header {
+  flex-grow: 0.05;
+  background-color: white;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  border-bottom: var(--border);
+}
+
+.layout-footer {
+  background-color: white;
+  flex-grow: 0.05;
+  padding-bottom: var(--padding-lg);
+}
+
+.layout-body {
+  flex-grow: 1;
+}
+
+.image {
+  /* border: var(--border); */
+  /* height: var(--image-sm);
+  width: auto; */
+  object-fit: cover;
+  border-radius: 1.5rem;
+}
+
+.image--sm {
+  height: var(--image-sm);
+}
+
+.image--md {
+  height: var(--image-md);
+}
+
+.image--selected {
+  border: 8px solid hsla(216, 100%, 88%, 1);
+}
+
+.imageSlider {
+  border: hsla(0, 0%, 17%, 1);
+  overflow: hidden;
+  /* display: flex; */
+  /* flex-flow: row nowrap; */
+}
+
+.imageSlider-scroll {
+  display: flex;
+  flex-flow: row nowrap;
+  overflow-x: scroll;
+}
+
+.cs-message--incoming .cs-message__content {
+  background: var(--gradient);
+  border: var(--border);
+}
+
+.cs-message--outgoing .cs-message__content {
+  background-color: var(--white);
+  border: var(--border);
+}
+
+.cs-message--outgoing .cs-message__content .genderSelect {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  border: none !important;
+}
+
+.genderSelect-button {
+  border: var(--border);
+  margin: 1ch;
+  padding: 0.5ch;
+  line-height: 1.5;
+  border-radius: 2ch;
+}
+
+/* border */
+/* .cs-message .cs-message__content-wrapper .cs-message__content {
+  border: var(--border) !important;
+}
+ */
+
+.stacked {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.stacked p {
+  margin: 0;
+  line-height: 1.5;
+}
